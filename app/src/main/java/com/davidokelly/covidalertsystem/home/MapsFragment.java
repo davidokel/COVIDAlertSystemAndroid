@@ -65,6 +65,7 @@ public class MapsFragment extends Fragment {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        @SuppressLint("MissingPermission")
         @Override
         public void onMapReady(GoogleMap googleMap) {
 
@@ -107,7 +108,7 @@ public class MapsFragment extends Fragment {
                 }
             });
             map.getUiSettings().setAllGesturesEnabled(true);
-            enableUserLocation();
+            map.setMyLocationEnabled(true);
         }
     };
 
@@ -129,33 +130,6 @@ public class MapsFragment extends Fragment {
         }
     }
 
-
-    private void enableUserLocation() {
-        Log.d(TAG, "enableUserLocation: Called");
-        if (ContextCompat.checkSelfPermission((getActivity()), Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission((getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
-            Log.d(TAG, "enableUserLocation: Permission Already Given");
-        } else {
-            //Ask for permission
-            if (ActivityCompat.shouldShowRequestPermissionRationale
-                    (getActivity(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
-                    ActivityCompat.shouldShowRequestPermissionRationale
-                            (getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Log.d(TAG, "enableUserLocation: Asked");
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
-                            .ACCESS_BACKGROUND_LOCATION}, BACKGROUND_LOCATION_ACCESS_REQUEST_CODE);
-                }
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
-                        .ACCESS_FINE_LOCATION}, FINE_LOCATION_ACCESS_REQUEST_CODE);
-
-            }
-        }
-    }
-
     private CircleOptions Circle(LatLng latLng) {
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(latLng);
@@ -166,22 +140,6 @@ public class MapsFragment extends Fragment {
         return circleOptions;
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == BACKGROUND_LOCATION_ACCESS_REQUEST_CODE || requestCode == FINE_LOCATION_ACCESS_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted
-                Log.d(TAG, "onRequestPermissionResult: Granted");
-                map.setMyLocationEnabled(true);
-                Log.d(TAG, "map: setMyLocationEnabled");
-            } else {
-                //no permission
-                Log.d(TAG, "onRequestPermissionResult: Not Granted");
-            }
-        }
-    }
 
     @SuppressLint("MissingPermission")
     private void addGeofence(LatLng latLng) {
