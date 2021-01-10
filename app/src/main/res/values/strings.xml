@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">COVID-19 Alert System</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_register">Register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome "</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="welcomeTo">Welcome to your personal</string>
+    <string name="COVID_system_Title">COVID-19 Alert System</string>
+    <string name="i_ve_forgotten_my_password">I have forgotten my password</string>
+    <string name="forgotten_email">Please enter email address to receive password reset link.</string>
+    <string name="send_email">Send password reset link</string>
+
+    <!-- Preference Titles -->
+    <string name="settings_header">Settings</string>
+    <string name="location_header">Location Services</string>
+    <string name="notifications">Notifications</string>
+
+    <!-- Preferences -->
+    <string name="preference_address">Address</string>
+    <string name="news_and_info">COVID-19 News and Information</string>
+    <string name="warnings">Reminders</string>
+
+    <!-- Home Activity Strings -->
+    <string name="address">ADDRESS HERE</string>
+
+    <!-- Menu Items-->
+    <string name="menu_header">Menu</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_title_activity_settings">SettingsActivity</string>
+    <string name="menu_logout">Log Out</string>
+    <string name="menu_account">Account</string>
+
+
+    <!-- Register Page -->
+    <string name="register_actionBar">Create an Account</string>
+    <string name="register_header">Account Details</string>
+    <string name="register_name">First Name</string>
+    <string name="register_surname">Surname</string>
+    <string name="register_email">Email Address</string>
+    <string name="register_password">Password</string>
+    <string name="register_password_confirm">Confirm Password</string>
+    <string name="address_header">Home Address</string>
+    <string name="register_address">Street Number</string>
+    <string name="register_address2">Street Name</string>
+    <string name="register_address3">Town/City</string>
+    <string name="register_address4">County/Province</string>
+    <string name="register_address5">Postal Code</string>
+    <string name="logo_with_hygienic_mask">Logo with Hygienic Mask</string>
+    <string name="show_password">Show Password</string>
+    <string name="use_current_location">Use Current Location</string>
+
+    <!-- Account Page   -->
+    <string name="account_name">Name:</string>
+    <string name="account_email">Email:</string>
+    <string name="account_uid">UID: </string>
+    <string name="account_verification_status">Verification Status:</string>
+    <string name="account_address">Address:</string>
+    <string name="account_change_name">Change Name</string>
+    <string name="account_change_email">Change Email Address</string>
+    <string name="account_resend_veri">Resend Verification Email</string>
+    <string name="account_change_address">Change Home Address</string>
+    <string name="account_delete_acc">Delete Account</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="login_again">Please Login Again</string>
+    <string name="title_activity_maps">Map</string>
+
+</resources>

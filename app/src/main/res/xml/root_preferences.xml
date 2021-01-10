@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/location_header">
+
+        <EditTextPreference
+            app:key="address"
+            app:title="@string/preference_address"
+            app:useSimpleSummaryProvider="true">
+
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/notifications">
+
+        <SwitchPreferenceCompat
+            app:key="notifications_news"
+            app:title="@string/news_and_info" />
+
+        <SwitchPreferenceCompat
+            app:key="@string/warnings"
+            app:summaryOff="Do not show reminders to protect yourself"
+            app:summaryOn="Show reminders to protect yourself"
+            app:title="@string/warnings" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

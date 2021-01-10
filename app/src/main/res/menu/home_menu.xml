@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/menu_icon"
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title="@string/menu_header"
+        app:iconTint="@color/white"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_home"
+                android:icon="@drawable/vector_home"
+                android:title="@string/menu_home"
+                app:iconTint="?attr/customTint"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/menu_account"
+                android:icon="@drawable/ic_baseline_person_24"
+                android:title="@string/menu_account"
+                app:iconTint="?attr/customTint"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/menu_settings"
+                android:icon="@drawable/vector_settings"
+                android:title="@string/menu_settings"
+                app:iconTint="?attr/customTint"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/menu_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="@string/menu_logout"
+                app:iconTint="?attr/customTint"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+</menu>

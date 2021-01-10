@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".data.User.RegisterActivity">
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/register_header"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="64dp"
+                android:text="@string/register_header"
+                android:textColor="?attr/colorSecondary"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/register_input_name"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/register_input_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginLeft="64dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginRight="64dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_name"
+                android:inputType="textPersonName"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/register_header" />
+
+            <EditText
+                android:id="@+id/register_input_surname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_surname"
+                android:inputType="textPersonName"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_name"
+                app:layout_constraintStart_toStartOf="@+id/register_input_name"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_name" />
+
+            <EditText
+                android:id="@+id/register_input_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_email"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_surname"
+                app:layout_constraintStart_toStartOf="@+id/register_input_surname"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_surname" />
+
+            <EditText
+                android:id="@+id/register_input_password"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_email"
+                app:layout_constraintStart_toStartOf="@+id/register_input_email"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_email" />
+
+            <EditText
+                android:id="@+id/register_input_password_confirm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_password_confirm"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_password"
+                app:layout_constraintStart_toStartOf="@+id/register_input_password"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_password" />
+
+            <TextView
+                android:id="@+id/register_address_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:text="@string/address_header"
+                android:textColor="?attr/colorSecondary"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_address"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/register_input_address"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_password_confirm" />
+
+            <EditText
+                android:id="@+id/register_input_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_address"
+                android:inputType="textPostalAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_password_confirm"
+                app:layout_constraintStart_toStartOf="@+id/register_input_password_confirm"
+                app:layout_constraintTop_toBottomOf="@+id/register_address_header" />
+
+            <EditText
+                android:id="@+id/register_input_address2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_address2"
+                android:inputType="textPostalAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_address"
+                app:layout_constraintStart_toStartOf="@+id/register_input_address"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_address" />
+
+            <EditText
+                android:id="@+id/register_input_address3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_address3"
+                android:inputType="textPostalAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_address2"
+                app:layout_constraintStart_toStartOf="@+id/register_input_address2"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_address2" />
+
+            <EditText
+                android:id="@+id/register_input_address4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_address4"
+                android:inputType="textPostalAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_address3"
+                app:layout_constraintStart_toStartOf="@+id/register_input_address3"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_address3" />
+
+            <EditText
+                android:id="@+id/register_input_address5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/register_address5"
+                android:inputType="textPostalAddress"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_address4"
+                app:layout_constraintStart_toStartOf="@+id/register_input_address4"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_address4" />
+
+            <Button
+                android:id="@+id/register_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="88dp"
+                android:layout_marginLeft="88dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="88dp"
+                android:layout_marginRight="88dp"
+                android:layout_marginBottom="64dp"
+                android:text="@string/action_register"
+                android:textColor="?attr/textColorButton"
+                app:backgroundTint="@color/teal_700"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_address5" />
+
+            <CheckBox
+                android:id="@+id/register_checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:text="@string/show_password"
+                app:layout_constraintEnd_toEndOf="@+id/register_input_password_confirm"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/register_input_password_confirm"
+                app:layout_constraintTop_toBottomOf="@+id/register_input_password_confirm" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/current_location_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="@string/use_current_location"
+                app:layout_constraintBottom_toBottomOf="@+id/register_address_header"
+                app:layout_constraintStart_toEndOf="@+id/register_address_header"
+                app:layout_constraintTop_toTopOf="@+id/register_address_header" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/register_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
