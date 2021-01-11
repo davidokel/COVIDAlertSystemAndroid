@@ -107,7 +107,6 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
         changeName.setOnClickListener(v -> openChangeNameDialog());
 
         changeEmail.setOnClickListener(v -> {
-            //TODO only open login page if necessary
             openChangeEmailDialog();
         });
 

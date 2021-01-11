@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.davidokelly.covidalertsystem.data.Notifications.NotificationHelper;
+import com.davidokelly.covidalertsystem.home.MapsFragment;
 import com.google.android.gms.location.GeofencingEvent;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
@@ -18,7 +20,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         // TODO: Implement notifications alongside learning (Notification Helper from yoursTRULY (yt)
         // an Intent broadcast.
         Toast.makeText(context, "Geofence triggered...", Toast.LENGTH_SHORT).show();
-
+        NotificationHelper notificationHelper = new NotificationHelper(context);
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
 
         if (geofencingEvent.hasError()) {
@@ -26,6 +28,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
+        notificationHelper.sendReminderNotification("You are leaving the house", "Do you have your mask?", MapsFragment.class);
 
     }
 }

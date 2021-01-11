@@ -28,6 +28,7 @@
 
     <!-- Home Activity Strings -->
     <string name="address">ADDRESS HERE</string>
+    <string name="enable_location">Please enable background location settings to use this app as intended.</string>
 
     <!-- Menu Items-->
     <string name="menu_header">Menu</string>

@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentContainerView;
 
 import com.davidokelly.covidalertsystem.R;
 import com.davidokelly.covidalertsystem.ui.account.AccountActivity;
@@ -34,6 +37,8 @@ public class homeScreenActivity extends AppCompatActivity {
     private Bundle bundle;
     private GeofencingClient geofencingClient;
     private final String TAG = "homeScreenActivity";
+    private FragmentContainerView mapFragment;
+    private TextView enableLocationText;
 
 
     @Override
@@ -43,10 +48,9 @@ public class homeScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_screen);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF018786")));
-        //TODO add location permission check here instead of maps and only enable map if TRUE
         checkPermissions();
-
-
+        mapFragment = findViewById(R.id.mapFragment);
+        enableLocationText = findViewById(R.id.text_enable_location);
 
         geofencingClient = LocationServices.getGeofencingClient(this);
     }
@@ -137,7 +141,9 @@ public class homeScreenActivity extends AppCompatActivity {
                     // the features requires a permission that the user has denied.
                     // At the same time, respect the user's decision. Don't link to
                     // system settings in an effort to convince the user to change
-                    // their decision. //TODO Add Replacement Page
+                    // their decision.
+                    mapFragment.setVisibility(View.INVISIBLE);
+                    enableLocationText.setVisibility(View.VISIBLE);
                 }
                 return;
         }
