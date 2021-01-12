@@ -41,11 +41,12 @@ public class RegisterActivity extends AppCompatActivity {
     public static final String TAG = "RegisterActivity";
     private FirebaseAuth fAuth;
     private FirebaseFirestore database;
-    private final int BACKGROUND_LOCATION_ACCESS_REQUEST_CODE = 10001;
-    private final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10000;
+    private final int LOCATION_ACCESS_REQUEST_CODE = 10001;
     private LocationManager locationManager;
     String userID;
     private double lat, lng;
+
+    private SwitchCompat currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +55,6 @@ public class RegisterActivity extends AppCompatActivity {
         ActionBar bar = getSupportActionBar();
         assert bar != null;
         bar.setBackgroundDrawable(new ColorDrawable(0xFF018786));
-
-        //TODO add use current location button
 
         final EditText nameEditText = findViewById(R.id.register_input_name);
         final EditText surnameEditText = findViewById(R.id.register_input_surname);
@@ -70,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         final ProgressBar progressBar = findViewById(R.id.register_progressBar);
         final Button registerButton = findViewById(R.id.register_button);
         final CheckBox checkBox = findViewById(R.id.register_checkBox);
-        final SwitchCompat currentLocation = findViewById(R.id.current_location_switch);
+        currentLocation = findViewById(R.id.current_location_switch);
 
         final boolean[] currentLocationOption = {false};
         fAuth = FirebaseAuth.getInstance();
@@ -108,56 +107,55 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerButton.setOnClickListener(v -> {
 
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString();
-                String passwordConfirm = passwordConfirmEditText.getText().toString();
-                String name = nameEditText.getText().toString();
-                String surname = surnameEditText.getText().toString();
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString();
+            String passwordConfirm = passwordConfirmEditText.getText().toString();
+            String name = nameEditText.getText().toString();
+            String surname = surnameEditText.getText().toString();
 
 
+            String streetNum = addressEditText.getText().toString();
+            String streetName = addressEditText2.getText().toString();
+            String town = addressEditText3.getText().toString();
+            String county = addressEditText4.getText().toString();
+            String postCode = addressEditText5.getText().toString().toUpperCase();
+            boolean correctInput = true;
 
-                String streetNum = addressEditText.getText().toString();
-                String streetName = addressEditText2.getText().toString();
-                String town = addressEditText3.getText().toString();
-                String county = addressEditText4.getText().toString();
-                String postCode = addressEditText5.getText().toString().toUpperCase();
-                boolean correctInput = true;
+            if (TextUtils.isEmpty(name)) {
+                nameEditText.setError("Please Enter Name");
+                correctInput = false;
+            }
+            if (TextUtils.isEmpty(surname)) {
+                nameEditText.setError("Please Enter Surname");
+                correctInput = false;
+            }
 
-                if (TextUtils.isEmpty(name)) {
-                    nameEditText.setError("Please Enter Name");
-                    correctInput = false;
-                }
-                if (TextUtils.isEmpty(surname)) {
-                    nameEditText.setError("Please Enter Surname");
-                    correctInput = false;
-                }
+            if (TextUtils.isEmpty(email) || !email.contains("@")) {
+                emailEditText.setError("Please Enter Valid Email");
+                correctInput = false;
+            }
 
-                if (TextUtils.isEmpty(email) || !email.contains("@")) {
-                    emailEditText.setError("Please Enter Valid Email");
-                    correctInput = false;
-                }
+            if (TextUtils.isEmpty(password)) {
+                passwordEditText.setError("Please Enter Password");
+                correctInput = false;
+            }
 
-                if (TextUtils.isEmpty(password)) {
-                    passwordEditText.setError("Please Enter Password");
-                    correctInput = false;
-                }
+            if (password.length() < 7) {
+                passwordEditText.setError("Password must be > 6 characters long");
+                correctInput = false;
+            }
 
-                if (password.length() < 7) {
-                    passwordEditText.setError("Password must be > 6 characters long");
-                    correctInput = false;
-                }
-
-                if (!password.equals(passwordConfirm)) {
-                    passwordConfirmEditText.setError("Password does not match");
-                    correctInput = false;
-                }
+            if (!password.equals(passwordConfirm)) {
+                passwordConfirmEditText.setError("Password does not match");
+                correctInput = false;
+            }
             //****************************
             //Use Current Location enabled
             //****************************
 
             if (currentLocationOption[0]) {
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                enableUserLocation();
+                checkPermissions();
 
                 if (correctInput) {
                     progressBar.setVisibility(View.VISIBLE);
@@ -203,18 +201,15 @@ public class RegisterActivity extends AppCompatActivity {
                 //****************************
                 //Use Current Location disabled
                 //****************************
-                if (TextUtils.isEmpty(streetNum)) {
-                    addressEditText.setError("Please Enter Valid Address"); //TODO add valid address check
-                    correctInput = false;
-                }
+                //TODO request Internet
 
                 if (TextUtils.isEmpty(streetName)) {
-                    addressEditText2.setError("Please Enter Valid Address"); //TODO add valid address check
+                    addressEditText2.setError("Please Enter Valid Address");
                     correctInput = false;
                 }
 
                 if (TextUtils.isEmpty(town)) {
-                    addressEditText3.setError("Please Enter Valid Address"); //TODO add valid address check
+                    addressEditText3.setError("Please Enter Valid Address");
                     correctInput = false;
                 }
 
@@ -269,52 +264,62 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void enableUserLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
-            } else {
-                Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
-            }
+        @SuppressLint("MissingPermission")
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location != null) {
+            lat = location.getLatitude();
+            lng = location.getLongitude();
         } else {
-            //Ask for permission
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
-                            .ACCESS_BACKGROUND_LOCATION}, BACKGROUND_LOCATION_ACCESS_REQUEST_CODE);
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
-                            .ACCESS_FINE_LOCATION}, FINE_LOCATION_ACCESS_REQUEST_CODE);
-                }
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
-                            .ACCESS_BACKGROUND_LOCATION}, BACKGROUND_LOCATION_ACCESS_REQUEST_CODE);
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
-                            .ACCESS_FINE_LOCATION}, FINE_LOCATION_ACCESS_REQUEST_CODE);
-                }
-
-            }
+            Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
+            currentLocation.setChecked(false);
         }
-
-
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == BACKGROUND_LOCATION_ACCESS_REQUEST_CODE || requestCode == FINE_LOCATION_ACCESS_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted
-                Log.d(TAG, "user: setMyLocationEnabled");
-            } else {
-                SwitchCompat currentLocation = findViewById(R.id.current_location_switch);
-                currentLocation.setChecked(false);
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
+        }
+        return true;
+    }
+
+    public void checkPermissions(){
+        String[] PERMISSIONS;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            PERMISSIONS = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+            };
+        } else {
+            PERMISSIONS = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+            };
+        }
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, LOCATION_ACCESS_REQUEST_CODE);
+        } else {
+            enableUserLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_ACCESS_REQUEST_CODE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableUserLocation();
+                }  else {
+                    Toast.makeText(this,"Please enable location services to use current location",Toast.LENGTH_SHORT).show();
+                    currentLocation.setChecked(false);
+                }
+                return;
         }
     }
 }

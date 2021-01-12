@@ -1,29 +1,22 @@
 package com.davidokelly.covidalertsystem.home;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentContainerView;
 
 import com.davidokelly.covidalertsystem.R;
@@ -48,7 +41,7 @@ public class homeScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_screen);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF018786")));
-        checkPermissions();
+        checkLocationPermissions();
         mapFragment = findViewById(R.id.mapFragment);
         enableLocationText = findViewById(R.id.text_enable_location);
 
@@ -110,7 +103,7 @@ public class homeScreenActivity extends AppCompatActivity {
         return true;
     }
 
-    public void checkPermissions(){
+    public void checkLocationPermissions(){
         String[] PERMISSIONS;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             PERMISSIONS = new String[]{

@@ -44,6 +44,9 @@ public class User {
         //TODO get address from lat/long
     }
 
+
+
+
     public double getLatitude() {
         return latitude;
     }
