@@ -156,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (currentLocationOption[0]) {
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 checkPermissions();
-
+                //TODO: create firebaseHelper class
                 if (correctInput) {
                     progressBar.setVisibility(View.VISIBLE);
                     registerButton.setEnabled(false);
