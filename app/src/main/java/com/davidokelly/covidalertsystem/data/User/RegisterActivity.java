@@ -170,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity {
                             DocumentReference usersDocument = database.collection("Users").document(userID);
                             User account = new User(name, surname, email, lat, lng);
                             Map<String, Object> user = new HashMap<>();
-
+                            //TODO change lat and long to be stored as a single geopoint
                             user.put("name", account.getFirstName());
                             user.put("surname", account.getSurname());
                             user.put("email", account.getEmail());
@@ -180,8 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("county", account.getCounty());
                             user.put("postcode", account.getPostcode());
                             user.put("address", account.getAddress());
-                            user.put("latitude", account.getLatitude());
-                            user.put("longitude", account.getLongitude());
+                            user.put("home", account.getHome());
 
                             usersDocument.set(user)
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: user Profile is created for " + userID))
@@ -241,8 +240,7 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("county", account.getCounty());
                             user.put("postcode", account.getPostcode());
                             user.put("address", account.getAddress());
-                            user.put("latitude", account.getLatitude());
-                            user.put("longitude", account.getLongitude());
+                            user.put("home",account.getHome());
 
                             usersDocument.set(user)
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: user Profile is created for " + userID))

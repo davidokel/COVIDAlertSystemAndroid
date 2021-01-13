@@ -1,5 +1,7 @@
 package com.davidokelly.covidalertsystem.data.User;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +15,7 @@ public class User {
     private String surname;
     private String email;
     private String address;
-    private double latitude;
-    private double longitude;
+    private GeoPoint home;
 
     public User(String streetNum, String streetName, String town, String county, String postcode, String firstName, String surname, String email) {
         this.streetNum = streetNum;
@@ -38,29 +39,17 @@ public class User {
         this.firstName = firstName;
         this.surname = surname;
         this.email = email;
-        this.latitude = latitude;
-        this.longitude = longitude;
-
+        this.home = new GeoPoint(latitude, longitude);
         //TODO get address from lat/long
     }
 
 
-
-
-    public double getLatitude() {
-        return latitude;
+    public GeoPoint getHome() {
+        return home;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setHome(GeoPoint home) {
+        this.home = home;
     }
 
     public String getStreetNum() {

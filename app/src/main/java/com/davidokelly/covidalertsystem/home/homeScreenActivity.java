@@ -32,6 +32,7 @@ public class homeScreenActivity extends AppCompatActivity {
     private final String TAG = "homeScreenActivity";
     private FragmentContainerView mapFragment;
     private TextView enableLocationText;
+    private MapsFragment map;
 
 
     @Override
@@ -50,9 +51,10 @@ public class homeScreenActivity extends AppCompatActivity {
 
     private void openMap() {
         if (bundle == null) {
+            map = new MapsFragment();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.mapFragment, new MapsFragment())
+                    .replace(R.id.mapFragment, map)
                     .commit();
         }
     }
@@ -74,22 +76,25 @@ public class homeScreenActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_settings:
                 Intent settingsIntent = new Intent(homeScreenActivity.this, com.davidokelly.covidalertsystem.settings.SettingsActivity.class);
+                closeFragment();
                 homeScreenActivity.this.startActivity(settingsIntent);
                 return true;
             case R.id.menu_logout:
-                FirebaseAuth.getInstance().signOut(); //logout
                 closeFragment();
-                finish();
+                FirebaseAuth.getInstance().signOut(); //logout
                 homeScreenActivity.this.startActivity(new Intent(getApplicationContext(), com.davidokelly.covidalertsystem.ui.login.LoginActivity.class));
+                finish();
+                return true;
             case R.id.menu_account:
                 startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     public void closeFragment() {
-        this.getSupportFragmentManager().popBackStack();
+
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {

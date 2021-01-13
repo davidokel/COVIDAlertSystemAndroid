@@ -58,8 +58,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //TODO add show password
-        //TODO dont allow signin in if not valid
         forgottenPassword.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, com.davidokelly.covidalertsystem.ui.login.forgottenPassword.class)));
 
 

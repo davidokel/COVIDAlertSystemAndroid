@@ -10,6 +10,10 @@ import android.widget.Toast;
 import com.davidokelly.covidalertsystem.data.Notifications.NotificationHelper;
 import com.davidokelly.covidalertsystem.home.MapsFragment;
 import com.google.android.gms.location.GeofencingEvent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
@@ -30,12 +34,23 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         }
 
         notificationHelper.sendReminderNotification("You are leaving the house", "Do you have your mask?", MapsFragment.class);
-
+        logTime();
 
         //Background task to keep receiver running
         Log.d(TAG, "onReceive: BOOT Action");
         PendingResult pendingResult = goAsync();
         new Task(pendingResult, intent).execute();
+    }
+
+    private void logTime() {
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        ExitLog exitLog = new ExitLog();
+        String UID = fAuth.getUid();
+
+        CollectionReference exitTimes = database.collection("ExitTimes").document(UID).collection("Logs");
+
+        exitLog.addToDatabase(exitTimes);
     }
 
     private static class Task extends AsyncTask<Void, Void, Void> {

@@ -19,7 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.mapFragment, new MapsFragment())
+                    .replace(R.id.settings, new SettingsFragment())
                     .commit();
         }
 
@@ -36,5 +36,5 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
         }
     }
-    //TODO change email address, change address, implement notifications
+    //TODO implement notifications
 }

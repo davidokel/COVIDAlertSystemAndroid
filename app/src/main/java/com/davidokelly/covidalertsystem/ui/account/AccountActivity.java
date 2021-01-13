@@ -1,5 +1,7 @@
 package com.davidokelly.covidalertsystem.ui.account;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,9 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.davidokelly.covidalertsystem.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -42,7 +46,7 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
         //Clickable Text
         final TextView changeName = findViewById(R.id.account_change_name);
         final TextView changeEmail = findViewById(R.id.account_change_email);
-        final TextView changeAddress = findViewById(R.id.account_change_address);
+        final TextView changeAddress = findViewById(R.id.account_change_address); //TODO add change address
         final TextView resendVeri = findViewById(R.id.account_resend_veri);
         final TextView deleteAccount = findViewById(R.id.account_delete);
 
@@ -71,7 +75,7 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
         verified.setVisibility(View.INVISIBLE);
         verified.setText(text);
         verified.setVisibility(View.VISIBLE);
-
+        //TODO Handle Null Values
         //Returning data
         DocumentReference userDocument = database.collection("Users").document(userID);
         userDocument.get().addOnCompleteListener(task -> {
@@ -106,18 +110,36 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
 
         changeName.setOnClickListener(v -> openChangeNameDialog());
 
-        changeEmail.setOnClickListener(v -> {
-            openChangeEmailDialog();
-        });
+        changeEmail.setOnClickListener(v -> openChangeEmailDialog());
 
         resendVeri.setOnClickListener(v -> {
             if (!userVerified) {
                 firebaseUser.sendEmailVerification()
                         .addOnSuccessListener(aVoid -> Toast.makeText(AccountActivity.this, "Verification Email Sent", Toast.LENGTH_LONG).show())
-                        .addOnFailureListener(e -> Toast.makeText(AccountActivity.this,"Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                        .addOnFailureListener(e -> Toast.makeText(AccountActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
             } else {
-                Toast.makeText(AccountActivity.this,"User Already Verified", Toast.LENGTH_LONG).show();
+                Toast.makeText(AccountActivity.this, "User Already Verified", Toast.LENGTH_LONG).show();
             }
+        });
+
+        deleteAccount.setOnClickListener(v -> {
+            //TODO redo dialog as separate class
+            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+            builder.setMessage("Please choose your answer below.");
+            builder.setTitle("Are you sure you want to delete your account?");
+            builder.setPositiveButton("Confirm", (dialog, which) ->
+                                userDocument.delete()
+                                        .addOnFailureListener(e -> Toast.makeText(getApplicationContext(),"Error: " + e.getLocalizedMessage(),Toast.LENGTH_LONG).show())
+                                        .addOnSuccessListener(aVoid1 -> {
+                                            Log.d(TAG, "onSuccess: userDocument deleted successfully for " + UID);
+                                            firebaseUser.delete().addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(getApplicationContext(), "Account has been deleted successfully", Toast.LENGTH_LONG).show();
+                                                startActivity(new Intent(getApplicationContext(), com.davidokelly.covidalertsystem.ui.login.LoginActivity.class));
+                                            }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Error: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
+                                        }));
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+            });
+            builder.create();
         });
     }
 
@@ -160,8 +182,8 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(AccountActivity.this, "Email Changed, Will take a few moments to update.", Toast.LENGTH_LONG).show();
                         firebaseUser.sendEmailVerification()
-                                .addOnSuccessListener(aVoid1 -> Log.d(TAG,"onSuccess: Verification email sent"))
-                                .addOnFailureListener(e1 -> Log.d(TAG,"onFailure: " + e1.toString()));
+                                .addOnSuccessListener(aVoid1 -> Log.d(TAG, "onSuccess: Verification email sent"))
+                                .addOnFailureListener(e1 -> Log.d(TAG, "onFailure: " + e1.toString()));
                     })
                     .addOnFailureListener(e1 -> Toast.makeText(AccountActivity.this, "Failed: " + e1.getMessage(), Toast.LENGTH_LONG).show());
         });

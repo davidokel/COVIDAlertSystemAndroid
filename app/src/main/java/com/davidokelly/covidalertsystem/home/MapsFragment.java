@@ -88,14 +88,14 @@ public class MapsFragment extends Fragment {
                             DocumentSnapshot document = task1.getResult();
                             if (document.exists()) {
                                 Log.d(TAG, "Lat and Long accessed for: " + userID);
-                                lat = Double.parseDouble(document.get("latitude").toString());
-                                lng = Double.parseDouble(document.get("longitude").toString());
+                                lat = document.getGeoPoint("home").getLatitude();
+                                lng = document.getGeoPoint("home").getLongitude();
                                 Log.d(TAG, "Lat: " + lat + " Lng:" + lng);
                                 LatLng home = new LatLng(lat, lng);
                                 addGeofence(home);
                                 map.addMarker(new MarkerOptions().position(home).title("Home Address"));
                                 map.addCircle(Circle(home));
-                                map.moveCamera(CameraUpdateFactory.newLatLng(home));
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(home,16));
                             } else {
                                 Log.d(TAG, "No such document");
                             }
