@@ -1,5 +1,6 @@
 package com.davidokelly.covidalertsystem.ui.account;
 
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.davidokelly.covidalertsystem.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 
 public class AccountActivity extends AppCompatActivity implements DialogChangeName.DialogChangeNameListener, DialogChangeEmail.DialogChangeEmailListener {
-    public static final String TAG = "AccountActivity";
+    private static final String TAG = "AccountActivity";
     FirebaseAuth fAuth;
     FirebaseFirestore database;
     FirebaseUser firebaseUser;
@@ -49,6 +52,7 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
         final TextView changeAddress = findViewById(R.id.account_change_address); //TODO add change address
         final TextView resendVeri = findViewById(R.id.account_resend_veri);
         final TextView deleteAccount = findViewById(R.id.account_delete);
+        //TODO add clear exitlogs
 
         fAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
@@ -110,7 +114,10 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
 
         changeName.setOnClickListener(v -> openChangeNameDialog());
 
-        changeEmail.setOnClickListener(v -> openChangeEmailDialog());
+        changeEmail.setOnClickListener(v -> {
+            openChangeEmailDialog();
+            openLoginDialog();
+        });
 
         resendVeri.setOnClickListener(v -> {
             if (!userVerified) {
@@ -123,23 +130,9 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
         });
 
         deleteAccount.setOnClickListener(v -> {
-            //TODO redo dialog as separate class
-            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-            builder.setMessage("Please choose your answer below.");
-            builder.setTitle("Are you sure you want to delete your account?");
-            builder.setPositiveButton("Confirm", (dialog, which) ->
-                                userDocument.delete()
-                                        .addOnFailureListener(e -> Toast.makeText(getApplicationContext(),"Error: " + e.getLocalizedMessage(),Toast.LENGTH_LONG).show())
-                                        .addOnSuccessListener(aVoid1 -> {
-                                            Log.d(TAG, "onSuccess: userDocument deleted successfully for " + UID);
-                                            firebaseUser.delete().addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(getApplicationContext(), "Account has been deleted successfully", Toast.LENGTH_LONG).show();
-                                                startActivity(new Intent(getApplicationContext(), com.davidokelly.covidalertsystem.ui.login.LoginActivity.class));
-                                            }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Error: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
-                                        }));
-            builder.setNegativeButton("Cancel", (dialog, which) -> {
-            });
-            builder.create();
+            DialogDeleteAccount dialogDeleteAccount = new DialogDeleteAccount();
+            dialogDeleteAccount.show(getSupportFragmentManager(), "delete account dialog");
+            openLoginDialog();
         });
     }
 
@@ -177,7 +170,7 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
                     Toast.makeText(AccountActivity.this, "Email Changed, Will take a few moments to update.", Toast.LENGTH_LONG).show();
                 }).addOnFailureListener(e -> {
             Log.d(TAG, "onFailure: " + e.toString());
-            openLoginDialog(); //TODO wait for dialog response
+            openLoginDialog();
             firebaseUser.updateEmail(email)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(AccountActivity.this, "Email Changed, Will take a few moments to update.", Toast.LENGTH_LONG).show();
@@ -193,7 +186,7 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
     }
 
     public void openLoginDialog() {
-        DialogLogin dialogLogin = new DialogLogin();
-        dialogLogin.show(getSupportFragmentManager(), "login dialog");
+        DialogFragment dialogFragment = new DialogLogin(getApplicationContext());
+        dialogFragment.show(getSupportFragmentManager(), "login dialog");
     }
 }

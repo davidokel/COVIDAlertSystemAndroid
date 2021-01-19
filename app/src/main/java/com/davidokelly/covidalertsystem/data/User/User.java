@@ -1,28 +1,26 @@
 package com.davidokelly.covidalertsystem.data.User;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+
 import com.google.firebase.firestore.GeoPoint;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class User {
-    private String streetNum;
-    private String streetName;
-    private String town;
-    private String county;
-    private String postcode;
+    private Geocoder geocoder;
     private String firstName;
     private String surname;
     private String email;
     private String address;
     private GeoPoint home;
 
-    public User(String streetNum, String streetName, String town, String county, String postcode, String firstName, String surname, String email) {
-        this.streetNum = streetNum;
-        this.streetName = streetName;
-        this.town = town;
-        this.county = county;
-        this.postcode = postcode;
+    public User(String streetNum, String streetName, String town, String county, String postcode, String firstName, String surname, String email, Context context,Locale locale) {
+        this.geocoder = new Geocoder(context, locale);
         this.firstName = firstName;
         this.surname = surname;
         this.email = email;
@@ -32,17 +30,47 @@ public class User {
         } else {
             this.address = streetNum + d + streetName + d + town + d + county + d + postcode;
         }
-        //TODO get latitude and longitude from address
+        try {
+            Address address = this.geocoder.getFromLocationName(this.address, 1).get(0);
+            double lat = address.getLatitude();
+            double lng = address.getLongitude();
+            this.home = new GeoPoint(lat,lng);
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.home = new GeoPoint(0,0);
+        }
     }
 
-    public User(String firstName, String surname, String email, double latitude, double longitude) {
+    public User(String firstName, String surname, String email, double latitude, double longitude, Context context, Locale locale) {
+        this.geocoder = new Geocoder(context, locale);
+        try {
+            Address geoAddress = this.geocoder.getFromLocation(latitude, longitude, 1).get(0);
+            this.address = addressToString(geoAddress);
+        } catch (IOException e) {
+            this.address = "Error Setting Address";
+            e.printStackTrace();
+        }
         this.firstName = firstName;
         this.surname = surname;
         this.email = email;
         this.home = new GeoPoint(latitude, longitude);
-        //TODO get address from lat/long
     }
 
+    public User() {
+    }
+
+    public String addressToString(Address address) {
+        String d = ", ";
+        return address.getSubThoroughfare() +
+                d +
+                address.getThoroughfare() +
+                d +
+                address.getSubAdminArea() +
+                d +
+                address.getAdminArea() +
+                d +
+                address.getPostalCode();
+    }
 
     public GeoPoint getHome() {
         return home;
@@ -50,46 +78,6 @@ public class User {
 
     public void setHome(GeoPoint home) {
         this.home = home;
-    }
-
-    public String getStreetNum() {
-        return streetNum;
-    }
-
-    public void setStreetNum(String streetNum) {
-        this.streetNum = streetNum;
-    }
-
-    public String getStreetName() {
-        return streetName;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
-    }
-
-    public String getTown() {
-        return town;
-    }
-
-    public void setTown(String town) {
-        this.town = town;
-    }
-
-    public String getCounty() {
-        return county;
-    }
-
-    public void setCounty(String county) {
-        this.county = county;
-    }
-
-    public String getPostcode() {
-        return postcode;
-    }
-
-    public void setPostcode(String postcode) {
-        this.postcode = postcode;
     }
 
     public String getFirstName() {

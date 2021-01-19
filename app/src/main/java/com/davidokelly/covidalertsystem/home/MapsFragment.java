@@ -44,14 +44,12 @@ public class MapsFragment extends Fragment {
     private GeofencingClient geofencingClient;
     private GeofenceHelper geofenceHelper;
     private GoogleMap map;
-    private final int BACKGROUND_LOCATION_ACCESS_REQUEST_CODE = 10001;
-    private final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10000;
-    public static final String TAG = "MapsFragment";
+    private static final String TAG = "MapsFragment";
     private FirebaseAuth fAuth;
     private FirebaseFirestore database;
     private FirebaseUser firebaseUser;
     private double lat = 0, lng = 0;
-    private final float GEOFENCE_RADIUS = 50;
+    private final float GEOFENCE_RADIUS = 75;
     private String userID;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -140,7 +138,6 @@ public class MapsFragment extends Fragment {
         return circleOptions;
     }
 
-
     @SuppressLint("MissingPermission")
     private void addGeofence(LatLng latLng) {
         Geofence geofence = geofenceHelper.getGeofence(userID, latLng, GEOFENCE_RADIUS, Geofence.GEOFENCE_TRANSITION_EXIT);
@@ -148,7 +145,7 @@ public class MapsFragment extends Fragment {
         PendingIntent pendingIntent = geofenceHelper.getPendingIntent();
         geofencingClient.addGeofences(geofencingRequest, pendingIntent)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "onSuccess: Geofence Added...");
+                    Log.d(TAG, "onSuccess: Geofence added at " + latLng.toString() + ", Radius: " + GEOFENCE_RADIUS);
                 }).addOnFailureListener(e -> {
             String errorMessage = geofenceHelper.getErrorString(e);
             Log.d(TAG, "onFailure: " + errorMessage);

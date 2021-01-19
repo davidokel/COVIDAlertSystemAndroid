@@ -2,6 +2,7 @@ package com.davidokelly.covidalertsystem.ui.account;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -24,8 +25,13 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class DialogLogin extends AppCompatDialogFragment {
 
-    public static final String TAG = "LoginDialog";
+    private static final String TAG = "LoginDialog";
     private EditText editTextPassword;
+    private Context context;
+
+    public DialogLogin(Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -38,7 +44,6 @@ public class DialogLogin extends AppCompatDialogFragment {
         builder.setView(view)
                 .setTitle(R.string.login_again)
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
-
                 })
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
                     String password = editTextPassword.getText().toString();
@@ -66,10 +71,14 @@ public class DialogLogin extends AppCompatDialogFragment {
         AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), password);
 
         user.reauthenticate(credential)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: User Re-authenticated"))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "onSuccess: User Re-authenticated");
+                    Toast.makeText(this.context, "Logged in successfully.", Toast.LENGTH_LONG).show();
+
+                })
                 .addOnFailureListener(e -> {
                     Log.d(TAG,"onFailure: " + e.getMessage());
-                    Toast.makeText(getContext(), "Error: " + e.getMessage() + ", Please try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this.context, "Error: " + e.getMessage() + " Please try again.", Toast.LENGTH_LONG).show();
                     reAuthenticate(password);
                 });
     }

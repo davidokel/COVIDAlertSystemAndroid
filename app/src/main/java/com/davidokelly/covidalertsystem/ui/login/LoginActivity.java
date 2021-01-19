@@ -1,6 +1,9 @@
 package com.davidokelly.covidalertsystem.ui.login;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.davidokelly.covidalertsystem.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +30,7 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final String TAG = "LoginActivity";
+    private static final String TAG = "LoginActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,4 +129,5 @@ public class LoginActivity extends AppCompatActivity {
         LoginActivity.this.startActivity(homeIntent);
         finish();
     }
+
 }

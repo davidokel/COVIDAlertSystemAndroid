@@ -33,6 +33,7 @@ public class homeScreenActivity extends AppCompatActivity {
     private FragmentContainerView mapFragment;
     private TextView enableLocationText;
     private MapsFragment map;
+    private boolean hasPermission = false;
 
 
     @Override
@@ -76,14 +77,13 @@ public class homeScreenActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_settings:
                 Intent settingsIntent = new Intent(homeScreenActivity.this, com.davidokelly.covidalertsystem.settings.SettingsActivity.class);
-                closeFragment();
                 homeScreenActivity.this.startActivity(settingsIntent);
                 return true;
             case R.id.menu_logout:
-                closeFragment();
                 FirebaseAuth.getInstance().signOut(); //logout
                 homeScreenActivity.this.startActivity(new Intent(getApplicationContext(), com.davidokelly.covidalertsystem.ui.login.LoginActivity.class));
                 finish();
+                //TODO Clear Geofences on log out
                 return true;
             case R.id.menu_account:
                 startActivity(new Intent(getApplicationContext(), AccountActivity.class));
@@ -91,10 +91,6 @@ public class homeScreenActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public void closeFragment() {
-
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {

@@ -17,11 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "GeofenceBR";
+    private static final String TAG = "GeofenceBR";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        Log.d(TAG, "onReceive Triggered");
         // TODO: Implement notifications alongside learning (Notification Helper from yoursTRULY (yt)
         // an Intent broadcast.
         Toast.makeText(context, "Geofence triggered...", Toast.LENGTH_SHORT).show();

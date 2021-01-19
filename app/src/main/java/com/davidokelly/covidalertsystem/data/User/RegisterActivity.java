@@ -35,17 +35,18 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
-    public static final String TAG = "RegisterActivity";
+    private final String TAG = "RegisterActivity";
     private FirebaseAuth fAuth;
     private FirebaseFirestore database;
     private final int LOCATION_ACCESS_REQUEST_CODE = 10001;
     private LocationManager locationManager;
     String userID;
     private double lat, lng;
-
+    private boolean hasPermissions;
     private SwitchCompat currentLocation;
 
     @Override
@@ -56,6 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
         assert bar != null;
         bar.setBackgroundDrawable(new ColorDrawable(0xFF018786));
 
+        final Locale current = getResources().getConfiguration().locale;
         final EditText nameEditText = findViewById(R.id.register_input_name);
         final EditText surnameEditText = findViewById(R.id.register_input_surname);
         final EditText emailEditText = findViewById(R.id.register_input_email);
@@ -94,6 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
                 addressEditText3.setEnabled(false);
                 addressEditText4.setEnabled(false);
                 addressEditText5.setEnabled(false);
+                checkPermissions();
             } else {
                 currentLocationOption[0] = false;
                 addressEditText.setEnabled(true);
@@ -106,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         registerButton.setOnClickListener(v -> {
-
+            checkPermissions();
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString();
             String passwordConfirm = passwordConfirmEditText.getText().toString();
@@ -120,6 +123,11 @@ public class RegisterActivity extends AppCompatActivity {
             String county = addressEditText4.getText().toString();
             String postCode = addressEditText5.getText().toString().toUpperCase();
             boolean correctInput = true;
+
+            if (!hasPermissions) {
+                Toast.makeText(getApplicationContext(), "Please enable location settings to continue", Toast.LENGTH_LONG).show();
+                return;
+            }
 
             if (TextUtils.isEmpty(name)) {
                 nameEditText.setError("Please Enter Name");
@@ -154,7 +162,6 @@ public class RegisterActivity extends AppCompatActivity {
             //****************************
 
             if (currentLocationOption[0]) {
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 checkPermissions();
                 //TODO: create firebaseHelper class
                 if (correctInput) {
@@ -168,17 +175,11 @@ public class RegisterActivity extends AppCompatActivity {
                             firebaseUser.sendEmailVerification().addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: email verification sent for " + userID)).addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.toString()));
 
                             DocumentReference usersDocument = database.collection("Users").document(userID);
-                            User account = new User(name, surname, email, lat, lng);
+                            User account = new User(name, surname, email, lat, lng, getApplicationContext(), current);
                             Map<String, Object> user = new HashMap<>();
-                            //TODO change lat and long to be stored as a single geopoint
                             user.put("name", account.getFirstName());
                             user.put("surname", account.getSurname());
                             user.put("email", account.getEmail());
-                            user.put("streetNum", account.getStreetNum());
-                            user.put("streetName", account.getStreetName());
-                            user.put("town", account.getTown());
-                            user.put("county", account.getCounty());
-                            user.put("postcode", account.getPostcode());
                             user.put("address", account.getAddress());
                             user.put("home", account.getHome());
 
@@ -228,19 +229,13 @@ public class RegisterActivity extends AppCompatActivity {
                             firebaseUser.sendEmailVerification().addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: email verification sent for " + userID)).addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.toString()));
 
                             DocumentReference usersDocument = database.collection("Users").document(userID);
-                            User account = new User(streetNum, streetName, town, county, postCode, name, surname, email);
+                            User account = new User(streetNum, streetName, town, county, postCode, name, surname, email, getApplicationContext(), current);
                             Map<String, Object> user = new HashMap<>();
-
                             user.put("name", account.getFirstName());
                             user.put("surname", account.getSurname());
                             user.put("email", account.getEmail());
-                            user.put("streetNum", account.getStreetNum());
-                            user.put("streetName", account.getStreetName());
-                            user.put("town", account.getTown());
-                            user.put("county", account.getCounty());
-                            user.put("postcode", account.getPostcode());
                             user.put("address", account.getAddress());
-                            user.put("home",account.getHome());
+                            user.put("home", account.getHome());
 
                             usersDocument.set(user)
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: user Profile is created for " + userID))
@@ -261,12 +256,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("MissingPermission")
     private void enableUserLocation() {
-        @SuppressLint("MissingPermission")
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             lat = location.getLatitude();
             lng = location.getLongitude();
+            hasPermissions = true;
         } else {
             Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
             currentLocation.setChecked(false);
@@ -285,7 +282,7 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    public void checkPermissions(){
+    public void checkPermissions() {
         String[] PERMISSIONS;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             PERMISSIONS = new String[]{
@@ -300,8 +297,10 @@ public class RegisterActivity extends AppCompatActivity {
             };
         }
         if (!hasPermissions(this, PERMISSIONS)) {
+            Log.d(TAG, "checkPermissions: Permissions Requested");
             ActivityCompat.requestPermissions(this, PERMISSIONS, LOCATION_ACCESS_REQUEST_CODE);
         } else {
+            Log.d(TAG, "checkPermissions: Permissions already given");
             enableUserLocation();
         }
     }
@@ -313,8 +312,9 @@ public class RegisterActivity extends AppCompatActivity {
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     enableUserLocation();
-                }  else {
-                    Toast.makeText(this,"Please enable location services to use current location",Toast.LENGTH_SHORT).show();
+                    //TODO create account when this triggered only
+                } else {
+                    Toast.makeText(this, "Please enable location services to use current location", Toast.LENGTH_SHORT).show();
                     currentLocation.setChecked(false);
                 }
                 return;

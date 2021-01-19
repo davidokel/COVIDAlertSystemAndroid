@@ -18,7 +18,8 @@ public class ExitLog {
     private LocalTime exitTime;
     private long exitCount;
     private long identifier;
-
+    //TODO add Day value (1-7) and store in firebase document by day
+    //TODO only show notifs if exitCount >= 5. Delete stored ExitLogs after two weeks of data not being set (maybe add a serverMgmt class)
     public ExitLog() {
 
         this.exitTime = LocalTime.now();
