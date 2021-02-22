@@ -27,7 +27,7 @@
     <string name="warnings">Reminders</string>
 
     <!-- Home Activity Strings -->
-    <string name="address">ADDRESS HERE</string>
+    <string name="address">Address</string>
     <string name="enable_location">Please enable background location settings to use this app as intended.</string>
 
     <!-- Menu Items-->
@@ -37,7 +37,6 @@
     <string name="menu_title_activity_settings">SettingsActivity</string>
     <string name="menu_logout">Log Out</string>
     <string name="menu_account">Account</string>
-
 
     <!-- Register Page -->
     <string name="register_actionBar">Create an Account</string>
@@ -72,5 +71,12 @@
     <string name="ok">OK</string>
     <string name="login_again">Please Login Again</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- Change Address -->
+    <string name="change_address_title">Change Address</string>
+    <string name="update_address">Update</string>
+    <string name="set_home_current">Set to current location</string>
+    <string name="save">Save</string>
+    <string name="move_to_address">Move to</string>
 
 </resources>

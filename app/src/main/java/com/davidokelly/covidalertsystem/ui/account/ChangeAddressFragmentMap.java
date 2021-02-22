@@ -1,30 +1,22 @@
-package com.davidokelly.covidalertsystem.home;
+package com.davidokelly.covidalertsystem.ui.account;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.davidokelly.covidalertsystem.R;
-import com.davidokelly.covidalertsystem.data.Geofence.GeofenceHelper;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
+import com.davidokelly.covidalertsystem.data.User.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,21 +30,27 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
-public class MapsFragment extends Fragment {
-    private GeofencingClient geofencingClient;
-    private GeofenceHelper geofenceHelper;
+public class ChangeAddressFragmentMap extends Fragment {
+    private static final String TAG = "ChangeAddressFlag";
     private GoogleMap map;
-    private static final String TAG = "MapsFragment";
     private FirebaseAuth fAuth;
     private FirebaseFirestore database;
     private FirebaseUser firebaseUser;
-    private double lat = 0, lng = 0;
-    private final float GEOFENCE_RADIUS = 75;
     private String userID;
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private double lat, lng;
+    private double GEOFENCE_RADIUS = 75;
+    final Locale current = Locale.ENGLISH;//getResources().getConfiguration().locale; //TODO get locale
+    private LatLng homeLatLng;
+    private String homeAddress;
 
+    public ChangeAddressFragmentMap() {
+    }
+
+    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.
@@ -66,13 +64,8 @@ public class MapsFragment extends Fragment {
         @SuppressLint("MissingPermission")
         @Override
         public void onMapReady(GoogleMap googleMap) {
-
-
             map = googleMap;
             Log.d(TAG, "onMapReady: Used");
-
-            geofencingClient = LocationServices.getGeofencingClient(getContext());
-            geofenceHelper = new GeofenceHelper(getContext());
             fAuth = FirebaseAuth.getInstance();
             database = FirebaseFirestore.getInstance();
             firebaseUser = fAuth.getCurrentUser();
@@ -90,10 +83,9 @@ public class MapsFragment extends Fragment {
                                 lng = document.getGeoPoint("home").getLongitude();
                                 Log.d(TAG, "Lat: " + lat + " Lng:" + lng);
                                 LatLng home = new LatLng(lat, lng);
-                                addGeofence(home);
-                                map.addMarker(new MarkerOptions().position(home).title("Home Address"));
+                                map.addMarker(new MarkerOptions().position(home).title("Current Home Address"));
                                 map.addCircle(Circle(home));
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(home,16));
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 16));
                             } else {
                                 Log.d(TAG, "No such document");
                             }
@@ -107,22 +99,77 @@ public class MapsFragment extends Fragment {
             });
             map.getUiSettings().setAllGesturesEnabled(true);
             map.setMyLocationEnabled(true);
+
+            map.setOnMapLongClickListener(latLng -> {
+                map.clear();
+                Geocoder geocoder = new Geocoder(getActivity(), current);
+                try {
+                    Address address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1).get(0);
+                    homeAddress = new User().addressToString(address);
+                } catch (IOException e) {
+                    homeAddress = "Error finding address";
+                    e.printStackTrace();
+                }
+                setLatLng(latLng);
+            });
         }
     };
+
+    public LatLng getHomeLatLng() {
+        return homeLatLng;
+    }
+
+    public String getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(String homeAddress) {
+
+        Geocoder geocoder = new Geocoder(getActivity(), current);
+        try {
+            Address address = geocoder.getFromLocationName(homeAddress, 1).get(0);
+            setLatLng(new LatLng(address.getLatitude(), address.getLongitude()));
+            this.homeAddress = homeAddress;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(),"Could not find location from address", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+    private void setLatLng(LatLng homeLatLng) {
+        map.clear();
+        map.addMarker(new MarkerOptions().title(homeAddress).position(homeLatLng));
+        map.addCircle(Circle(homeLatLng));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 16));
+        this.homeLatLng = homeLatLng;
+    }
+
+    public void setHomeLatLng(LatLng homeLatLng) {
+        setLatLng(homeLatLng);
+        Geocoder geocoder = new Geocoder(getActivity(), current);
+        try {
+            Address address = geocoder.getFromLocation(homeLatLng.latitude, homeLatLng.longitude, 1).get(0);
+            this.homeAddress = new User().addressToString(address);
+        } catch (IOException e) {
+            Toast.makeText(getActivity(),"Could not find address from location", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        return inflater.inflate(R.layout.fragment_change_address_map, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
@@ -136,24 +183,5 @@ public class MapsFragment extends Fragment {
         circleOptions.fillColor(Color.argb(64, 255, 0, 0));
         circleOptions.strokeWidth(4);
         return circleOptions;
-    }
-
-    @SuppressLint("MissingPermission")
-    private void addGeofence(LatLng latLng) {
-        Geofence geofence = geofenceHelper.getGeofence(userID, latLng, GEOFENCE_RADIUS, Geofence.GEOFENCE_TRANSITION_EXIT);
-        GeofencingRequest geofencingRequest = geofenceHelper.getGeofencingRequest(geofence);
-        PendingIntent pendingIntent = geofenceHelper.getPendingIntent();
-        geofencingClient.addGeofences(geofencingRequest, pendingIntent)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "onSuccess: Geofence added at " + latLng.toString() + ", Radius: " + GEOFENCE_RADIUS);
-                }).addOnFailureListener(e -> {
-            String errorMessage = geofenceHelper.getErrorString(e);
-            Log.d(TAG, "onFailure: " + errorMessage);
-        });
-
-    }
-
-    public void removeGeofences() {
-        geofencingClient.removeGeofences(geofenceHelper.getPendingIntent());
     }
 }

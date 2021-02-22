@@ -48,8 +48,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         ExitLog exitLog = new ExitLog();
         String UID = fAuth.getUid();
 
-        CollectionReference exitTimes = database.collection("ExitTimes").document(UID).collection("Logs");
-
+        DocumentReference exitTimes = database.collection("ExitTimes").document(UID);
         exitLog.addToDatabase(exitTimes);
     }
 

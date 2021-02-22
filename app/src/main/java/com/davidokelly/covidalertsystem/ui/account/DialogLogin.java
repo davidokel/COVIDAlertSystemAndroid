@@ -28,7 +28,6 @@ public class DialogLogin extends AppCompatDialogFragment {
     private static final String TAG = "LoginDialog";
     private EditText editTextPassword;
     private Context context;
-
     public DialogLogin(Context context) {
         this.context = context;
     }

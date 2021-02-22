@@ -63,4 +63,5 @@ public class GeofenceHelper extends ContextWrapper {
         }
         return e.getLocalizedMessage();
     }
+
 }

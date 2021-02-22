@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+//TODO FIX BUGS
+
 public class RegisterActivity extends AppCompatActivity {
     private final String TAG = "RegisterActivity";
     private FirebaseAuth fAuth;
@@ -307,6 +309,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case LOCATION_ACCESS_REQUEST_CODE:
                 if (grantResults.length > 0 &&

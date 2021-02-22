@@ -1,6 +1,8 @@
 package com.davidokelly.covidalertsystem.ui.account;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -14,7 +16,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentContainerView;
 
 import com.davidokelly.covidalertsystem.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -133,6 +135,13 @@ public class AccountActivity extends AppCompatActivity implements DialogChangeNa
             DialogDeleteAccount dialogDeleteAccount = new DialogDeleteAccount();
             dialogDeleteAccount.show(getSupportFragmentManager(), "delete account dialog");
             openLoginDialog();
+        });
+
+        changeAddress.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.changeAddressFragmentLayout,new ChangeAddressMainFragment())
+                    .addToBackStack("ChangeAddressMain")
+                    .commit();
         });
     }
 
