@@ -33,7 +33,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        notificationHelper.sendReminderNotification("You are leaving the house", "Do you have your mask?", MapsFragment.class);
+        notificationHelper.sendReminderNotification("Do you have your mask?", "You appear to be leaving your home. Please be safe.", MapsFragment.class);
         logTime();
 
         //Background task to keep receiver running

@@ -78,8 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
         final boolean[] currentLocationOption = {false};
         fAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
-
-
+        
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());

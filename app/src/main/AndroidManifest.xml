@@ -31,7 +31,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
+        <receiver
+            android:name=".data.Notifications.ReminderBroadcastReciever"/>
         <receiver
             android:name=".data.Geofence.GeofenceBroadcastReceiver"
             android:enabled="true"

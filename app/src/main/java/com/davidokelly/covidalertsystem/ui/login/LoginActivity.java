@@ -31,6 +31,7 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+    private static final int LOCATION_ACCESS_REQUEST_CODE = 100111;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-
+        checkLocationPermissions();
         if (fAuth.getCurrentUser() != null) {
             Intent homeIntent = new Intent(LoginActivity.this, com.davidokelly.covidalertsystem.home.homeScreenActivity.class);
             startActivity(homeIntent);
@@ -128,6 +129,36 @@ public class LoginActivity extends AppCompatActivity {
         Intent homeIntent = new Intent(LoginActivity.this, com.davidokelly.covidalertsystem.home.homeScreenActivity.class);
         LoginActivity.this.startActivity(homeIntent);
         finish();
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void checkLocationPermissions(){
+        String[] PERMISSIONS;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            PERMISSIONS = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+            };
+        } else {
+            PERMISSIONS = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+            };
+        }
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, LOCATION_ACCESS_REQUEST_CODE);
+        }
     }
 
 }

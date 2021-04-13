@@ -1,6 +1,8 @@
 package com.davidokelly.covidalertsystem.home;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +25,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentContainerView;
 
 import com.davidokelly.covidalertsystem.R;
+import com.davidokelly.covidalertsystem.data.Geofence.GeofenceHelper;
+import com.davidokelly.covidalertsystem.data.Notifications.ReminderBroadcastReciever;
 import com.davidokelly.covidalertsystem.ui.account.AccountActivity;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,6 +41,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.intellij.lang.annotations.JdkConstants;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -56,7 +62,8 @@ public class homeScreenActivity extends AppCompatActivity {
     private TextView enableLocationText;
     private MapsFragment map;
     private boolean hasPermission = false;
-
+    private ArrayList<String> array;
+    private AlarmManager alarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +79,10 @@ public class homeScreenActivity extends AppCompatActivity {
 
         geofencingClient = LocationServices.getGeofencingClient(this);
 
-        ArrayList<String> array = getTimesArray();
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this,R.layout.support_simple_spinner_dropdown_item,array);
+        array = new ArrayList<>();
+        getTimesArray();
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this,R.layout.list_entries,array);
         listView.setAdapter(arrayAdapter);
-
     }
 
     private void openMap() {
@@ -109,7 +116,9 @@ public class homeScreenActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_logout:
                 FirebaseAuth.getInstance().signOut(); //logout
-                map.removeGeofences();
+                geofencingClient.removeGeofences(new GeofenceHelper(getApplicationContext()).getPendingIntent())
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "onSuccess: Geofences Removed"))
+                .addOnFailureListener(e -> Log.d(TAG, "onOptionsItemSelected: Geofence Removal Failed"));
                 homeScreenActivity.this.startActivity(new Intent(getApplicationContext(), com.davidokelly.covidalertsystem.ui.login.LoginActivity.class));
                 finish();
                 //TODO Clear Geofences on log out
@@ -173,9 +182,8 @@ public class homeScreenActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<String> getTimesArray() {
+    private void getTimesArray() {
         String UID = FirebaseAuth.getInstance().getUid();
-        ArrayList<String> times = new ArrayList<>();
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         CollectionReference userCollection;
@@ -190,20 +198,28 @@ public class homeScreenActivity extends AppCompatActivity {
                         List<DocumentSnapshot> docs = querySnapshot.getDocuments();
                         for (int j = 0; j < docs.size(); j++) {
                             String day = getDay(finalI);
-                            String time = getTimeFromDocument(docs.get(j)).toString();
-
-                            String entry = day + " - " + time;
-                            times.add(entry);
+                            LocalTime timeObj = getTimeFromDocument(docs.get(j));
+                            long exitCount = docs.get(j).getLong("exitCount");
+                            String time = timeObj.toString();
+                            String count = String.valueOf(exitCount);
+                            String entry = day + " - " + time + " : Count " + count;
+                            array.add(entry);
                             Log.d(TAG, "getTimesArray: Time Added for :" + entry);
+                            ArrayAdapter arrayAdapter2 = new ArrayAdapter(this,R.layout.list_entries,array);
+                            listView.setAdapter(arrayAdapter2);
+
+                            if (exitCount >= 5) {
+                                createTimedAlarm(timeObj);
+                            }
                         }
                     }
                 } else {
                     Log.d(TAG, "getTimesArray: Task Error - " + task.getException().getMessage());
                 }
+            }).addOnCanceledListener(() -> {
+                Log.d(TAG, "onCanceled: Cancelled Get");
             });
         }
-        times.add("Test");
-        return times;
     }
 
     private LocalTime getTimeFromDocument(DocumentSnapshot doc) {
@@ -221,30 +237,44 @@ public class homeScreenActivity extends AppCompatActivity {
         String day;
         switch (num) {
             case 1:
-                day = "Monday";
+                day = "Sunday";
                 break;
             case 2:
-                day = "Tuesday";
+                day = "Monday";
                 break;
             case 3:
-                day = "Wednesday";
+                day = "Tuesday";
                 break;
             case 4:
-                day = "Thursday";
+                day = "Wednesday";
                 break;
             case 5:
-                day = "Friday";
+                day = "Thursday";
                 break;
             case 6:
-                day = "Saturday";
+                day = "Friday";
                 break;
             case 7:
-                day = "Sunday";
+                day = "Saturday";
                 break;
             default:
                 day = "Unknown Day: " + num;
         }
         return day;
+    }
+    private void createTimedAlarm(LocalTime time) {
+        Intent intent =  new Intent(homeScreenActivity.this, ReminderBroadcastReciever.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(homeScreenActivity.this,-30,intent,0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        long lTime = (time.toNanoOfDay() / 1000) - 30*60*60;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,lTime,1000*60*60*24*7,pendingIntent);
+    }
+
+    private void clearAlarms() {
+        Intent intent =  new Intent(homeScreenActivity.this, ReminderBroadcastReciever.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(homeScreenActivity.this,-30,intent,0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 }
 

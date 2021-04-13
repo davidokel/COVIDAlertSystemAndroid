@@ -11,7 +11,7 @@
         android:name="com.davidokelly.covidalertsystem.home.MapsFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="256dp"
+        android:layout_marginBottom="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapFragment" />
+        app:layout_constraintTop_toBottomOf="@+id/mapFragment">
+
+    </ListView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
